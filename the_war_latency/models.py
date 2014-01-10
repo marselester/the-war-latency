@@ -23,7 +23,7 @@ class Game(object):
     END_STATE = 'over'
 
     def __init__(self, *args):
-        self.player_list = list(args)
+        self.player_list = set(args)
         self.state = self.WAIT_STATE
 
     def is_over(self):
@@ -97,4 +97,4 @@ class Game(object):
         if self.is_over():
             for player in self.player_list:
                 player.transport.loseConnection()
-            self.player_list = None
+            self.player_list = set()

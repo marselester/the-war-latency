@@ -69,6 +69,9 @@ class WarFactory(ServerFactory):
 
     def destroy_player(self, player):
         try:
+            # Removing is O(N), so maybe not to remove, and
+            # only set to ``None``. But it requires storing player's
+            # index of ``user_wait_list`` to get element by O(1).
             self.user_wait_list.remove(player)
         except ValueError:
             log.msg('User was not found in waiting list')
