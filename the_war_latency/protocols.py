@@ -16,6 +16,10 @@ class WarProtocol(LineReceiver):
         log.msg('{} connected'.format(self.addr))
         self.factory.prepare_player(player=self)
 
+    def connectionLost(self, reason):
+        log.msg('{} disconnected'.format(self.addr))
+        self.factory.destroy_player(player=self)
+
     @property
     def addr(self):
         peer = self.transport.getPeer()
@@ -60,3 +64,12 @@ class WarFactory(ServerFactory):
             d.callback(message)
         else:
             self.user_wait_list.append(player)
+
+    def destroy_player(self, player):
+        try:
+            self.user_wait_list.remove(player)
+        except ValueError:
+            log.msg('User was not found in waiting list')
+        else:
+            log.msg('User was removed from waiting list')
+        # Try to find player in games.
