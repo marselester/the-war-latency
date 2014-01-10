@@ -20,3 +20,12 @@ Now you can connect to server by telnet.
     Connected to localhost.
     Escape character is '^]'.
     Hi! I'm trying to find an opponent for you.
+
+Tests
+-----
+
+You can run tests by invoking ``trial``:
+
+.. code-block:: console
+
+    $ trial tests
