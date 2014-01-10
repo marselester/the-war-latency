@@ -1,4 +1,6 @@
 # coding: utf-8
+from collections import deque
+
 from twisted.internet.protocol import ServerFactory
 from twisted.protocols.basic import LineReceiver
 from twisted.python import log
@@ -34,8 +36,8 @@ class WarFactory(ServerFactory):
     protocol = WarProtocol
 
     def __init__(self):
-        self.user_wait_list = []
-        self.game_list = []
+        self.user_wait_list = deque()
+        self.game_list = deque()
 
     def player_sent_data(self, player, data):
         for game in self.game_list:
@@ -51,7 +53,7 @@ class WarFactory(ServerFactory):
         player.sendLine('Hi! I am trying to find an opponent for you.')
 
         if self.user_wait_list:
-            opponent = self.user_wait_list.pop()
+            opponent = self.user_wait_list.popleft()
             game = Game(player, opponent)
             self.game_list.append(game)
 
