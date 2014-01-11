@@ -20,7 +20,7 @@ class WarServerTest(TestCase):
         return port.stopListening()
 
     def test_get_welcome_message_after_connection_is_made(self):
-        cf = client.game(port=self.portnum)
+        cf = client.connected_client(port=self.portnum)
 
         def player_was_welcomed(message):
             expected_message = 'Hi! I am trying to find an opponent for you.'

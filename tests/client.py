@@ -61,7 +61,8 @@ class PlayerFactory(ClientFactory):
             d.errback(reason)
 
 
-def game(host='localhost', port=6666):
+def connected_client(host='localhost', port=6666):
+    """Creates player and connects it to server."""
     from twisted.internet import reactor
     factory = PlayerFactory()
     reactor.connectTCP(host, port, factory)
