@@ -15,7 +15,7 @@ class Game(object):
 
     """
 
-    NUMBER_TO_WAIT = 10
+    NUMBER_TO_WAIT = 3
     TOTEM = 'a'
 
     WAIT_STATE = 'wait'
