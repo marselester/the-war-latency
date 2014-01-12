@@ -1,5 +1,6 @@
 # coding: utf-8
 import random
+import weakref
 
 from twisted.internet.defer import Deferred
 
@@ -23,14 +24,14 @@ class Game(object):
     END_STATE = 'over'
 
     def __init__(self, *args):
-        self.player_list = set(args)
+        self.player_ref_set = {weakref.ref(player) for player in args}
         self.state = self.WAIT_STATE
 
     def is_over(self):
         return self.state == self.END_STATE
 
     def has_player(self, player):
-        return player in self.player_list
+        return weakref.ref(player) in self.player_ref_set
 
     def start(self):
         d = Deferred()
@@ -68,8 +69,10 @@ class Game(object):
         self.state = self.PLAY_STATE
 
     def _notify_players(self, message):
-        for player in self.player_list:
-            player.sendLine(message)
+        for player_ref in self.player_ref_set:
+            player = player_ref()
+            if player is not None:
+                player.sendLine(message)
 
     def _judge(self, player_and_data):
         """Judges the game and returns the winner.
@@ -85,16 +88,19 @@ class Game(object):
             return player
 
     def _notify_winner_and_losers_about_end(self, winner):
-        if not winner:
+        if winner is None:
             return
         winner.sendLine('You won!')
 
-        for player in self.player_list:
-            if player != winner:
+        for player_ref in self.player_ref_set:
+            player = player_ref()
+            if player is not None and player != winner:
                 player.sendLine('You lost!')
 
     def _clean_up(self, _):
         if self.is_over():
-            for player in self.player_list:
-                player.transport.loseConnection()
-            self.player_list = set()
+            for player_ref in self.player_ref_set:
+                player = player_ref()
+                if player is not None:
+                    player.transport.loseConnection()
+            self.player_ref_set = set()
